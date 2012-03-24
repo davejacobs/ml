@@ -36,5 +36,3 @@
                  normalized-X (normalize-features X)
                  head-normalized-X (take 5 normalized-X)]
              (is (= head-normalized-X expected-normalized-X)))))
-
-(run-tests)
