@@ -21,6 +21,7 @@
            [1.0000 -0.7357 -1.5378]
            [1.0000  1.2575  1.0904]]))
 
+; Test data import, then use expected-X for remaining tests
 (deftest data-import
   (testing "data is read properly"
            (is (= (count data) 2))
