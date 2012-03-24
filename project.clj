@@ -1,5 +1,8 @@
-(defproject ai "0.0.1-SNAPSHOT"
+(defproject ml "0.0.1-SNAPSHOT"
   :description "A study in machine learning, using Clojure"
-  :dependencies [[org.clojure/clojure "1.2.0"]
-                 [org.clojure/clojure-contrib "1.2.0"]
-                 [incanter "1.3.0-SNAPSHOT"]])
+  :jvm-opts ["-D java.awt.headless=true"]
+  :repositories {"sonatype-oss-public"
+                 "https://oss.sonatype.org/content/groups/public/"}
+  :dependencies [[org.clojure/clojure "1.3.0"]
+                 [incanter "1.3.0-SNAPSHOT"]]
+  :test-path "spec")

@@ -1,11 +1,11 @@
-(ns ml.exercise-1
-  (:use [incanter.core]
-        [incanter.io]
-        [incanter.stats]))
+(ns ml.exercise1.core
+  (:use incanter.core
+        incanter.io
+        incanter.stats))
 
 (defn pwd [] (System/getProperty "user.dir"))
 
-(def data (read-dataset "src/exercise-1/ex1data2.txt"))
+(def data (read-dataset (str (pwd) \/ "src/ml/exercise1/ex1data2.txt")))
 
 (def y (sel data :cols 2))
 (def m (count y))
@@ -34,7 +34,7 @@
     (for [i (range n)]
       (normalize-column (to-vect (sel X :cols i))))))
 
-(defn compute-cost [X y theta]
+(defn cost [X y theta]
   (let [difference-matrix (sq (minus (mmult X theta) y))]
     (* (/ 1 (* 2 m)) 
        (sum difference-matrix))))
@@ -51,6 +51,6 @@
          history []]
     (if (< idx iterations)
       (let [new-theta (next-theta X y theta alpha)
-            history-entry (compute-cost X y new-theta)]
+            history-entry (cost X y new-theta)]
         (recur new-theta (inc idx) (conj history history-entry)))
-      theta)))
+      {:theta theta :history history})))
