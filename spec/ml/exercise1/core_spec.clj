@@ -1,5 +1,6 @@
 (ns ml.exercise1.core-spec
-  (:use ml.exercise1.core
+  (:use ml.exercise1.core 
+        [clojure.math.numeric-tower :only (round)]
         clojure.test
         incanter.core))
 

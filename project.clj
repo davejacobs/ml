@@ -4,5 +4,6 @@
   :repositories {"sonatype-oss-public"
                  "https://oss.sonatype.org/content/groups/public/"}
   :dependencies [[org.clojure/clojure "1.3.0"]
+                 [org.clojure/math.numeric-tower "0.0.1"]
                  [incanter "1.3.0-SNAPSHOT"]]
   :test-path "spec")
