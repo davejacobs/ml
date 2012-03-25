@@ -47,7 +47,7 @@
 
 (deftest calculate-cost-of-prediction-theta
   (testing "calculates the cost of predictions theta relating X and y"
-    (let [exact-cost (cost X y [[0] [0] [0]])
+    (let [exact-cost (cost X y theta)
           rounded-cost (round exact-cost)] 
       (is (= rounded-cost 100)))))
 
