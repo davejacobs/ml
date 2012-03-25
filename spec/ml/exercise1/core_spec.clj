@@ -9,7 +9,7 @@
            [1 2 2]
            [1 3 1]]))
 
-(def y [399900 329900 369000 232000 539900])
+(def y [10 20 10])
 
 (def expected-normalized-X
   (matrix [[1.0 -1.0  1.0]
@@ -32,3 +32,9 @@
 (deftest normalize-one-matrix
   (testing "properly scales all features"
     (is (= (normalize-matrix X) expected-normalized-X))))
+
+(deftest calculate-cost-of-prediction-theta
+  (testing "calculates the cost of predictions theta relating X and y"
+    (let [exact-cost (cost X y [[0] [0] [0]])
+          rounded-cost (round exact-cost)] 
+      (is (= rounded-cost 100)))))
