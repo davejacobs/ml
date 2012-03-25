@@ -1,8 +1,8 @@
 (ns ml.exercise1.core-spec
   (:use ml.exercise1.core 
-        [clojure.math.numeric-tower :only (round)]
         clojure.test
-        incanter.core))
+        incanter.core
+        [clojure.math.numeric-tower :only (round)]))
 
 (def X
   (matrix [[1 1 3]
