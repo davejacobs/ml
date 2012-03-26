@@ -2,7 +2,6 @@
   :description "A study in machine learning, using Clojure"
   :dependencies [[org.clojure/clojure "1.3.0"]
                  [org.clojure/math.numeric-tower "0.0.1"]
-                 [org.clojure/tools.cli "0.2.1"]
                  [incanter "1.3.0"]]
   :repositories {"sonatype-oss-public"
                  "https://oss.sonatype.org/content/groups/public/"}
