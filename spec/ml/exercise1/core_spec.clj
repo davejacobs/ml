@@ -1,5 +1,6 @@
 (ns ml.exercise1.core-spec
   (:use ml.exercise1.core 
+        ml.helpers
         clojure.test
         incanter.core
         [clojure.math.numeric-tower :only (round)]))
@@ -53,10 +54,10 @@
 
 (deftest calculate-next-theta
   (testing "calculates the next set of thetas based on gradient descent"
-    (is (= (next-theta X y theta 0.01) expected-next-theta))))
+    (is (matrices-equal? (next-theta X y theta 0.01) expected-next-theta))))
 
 (deftest minimize-theta
   (testing "minimizes theta over the iterations given"
     (let [res (gradient-descent X y theta 0.01 100)
           {final-theta :theta history :history} res]
-      (is (= final-theta expected-final-theta)))))
+      (is (matrices-equal? final-theta expected-final-theta)))))

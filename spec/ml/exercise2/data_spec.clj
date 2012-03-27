@@ -1,5 +1,5 @@
-(ns ml.exercise1.data-spec
-  (:use ml.exercise1.data
+(ns ml.exercise2.data-spec
+  (:use ml.exercise2.data
         ml.helpers
         clojure.test
         incanter.core
@@ -7,11 +7,11 @@
         incanter.stats))
 
 (def expected-X
-  (matrix [[1.0000 2104.0000 3.0000]
-           [1.0000 1600.0000 3.0000]
-           [1.0000 2400.0000 3.0000]]))
+  (matrix [[1.0000 34.6237 78.0247]
+           [1.0000 30.2867 43.8950]
+           [1.0000 35.8474 72.9022]]))
 
-(def expected-y [399900 329900 369000])
+(def expected-y [0 0 0])
 
 (deftest data-import
   (testing "data is read properly"

@@ -1,9 +1,9 @@
-(ns ml.exercise1.data
+(ns ml.exercise2.data
   (:use incanter.core
         incanter.io
         ml.helpers))
 
-(def data (read-data "exercise1/ex1data2.txt"))
+(def data (read-data "exercise2/ex2data1.txt"))
 
 (def y (sel data :cols 2))
 
