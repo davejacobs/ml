@@ -1,8 +1,7 @@
 (ns ml.exercise1.data
   (:use incanter.core
-        incanter.io))
-
-(defn pwd [] (System/getProperty "user.dir"))
+        incanter.io
+        ml.shared.helpers))
 
 (def data (read-dataset (str (pwd) \/ "src/ml/exercise1/ex1data2.txt")))
 
