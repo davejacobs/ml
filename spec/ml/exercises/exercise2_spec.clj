@@ -1,6 +1,6 @@
-(ns ml.exercises.exercise2-spec
-  (:use ml.exercises.exercise2
-        ml.helpers
+(ns ml.exercises.exercise2-spec 
+  (:require [ml.exercises.exercise2 :as ex2])
+  (:use ml.helpers
         clojure.test
         incanter.core
         incanter.io
