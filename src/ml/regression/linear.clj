@@ -61,7 +61,7 @@
 
 (defn gradient-descent 
   ([x y original-theta]
-   (let [{:keys alpha iterations} defaults]
+   (let [{:keys [alpha iterations]} defaults]
      (gradient-descent x y original-theta alpha iterations)))
   ([x y original-theta alpha iterations]
    (loop [theta original-theta
