@@ -57,12 +57,16 @@
 (defn next-theta [x y theta alpha]
   (minus theta (mult alpha (cost-prime x y theta))))
 
-(defn gradient-descent [x y original-theta alpha iterations]
-  (loop [theta original-theta
-         idx 0
-         history []]
-    (if (< idx iterations)
-      (let [new-theta (next-theta x y theta alpha)
-            history-entry (cost x y new-theta)]
-        (recur new-theta (inc idx) (conj history history-entry)))
-      {:theta theta :history history})))
+(defn gradient-descent 
+  ([x y original-theta]
+   (let [{:keys alpha iterations} defaults]
+     (gradient-descent x y original-theta alpha iterations)))
+  ([x y original-theta alpha iterations]
+   (loop [theta original-theta
+          idx 0
+          history []]
+     (if (< idx iterations)
+       (let [new-theta (next-theta x y theta alpha)
+             history-entry (cost x y new-theta)]
+         (recur new-theta (inc idx) (conj history history-entry)))
+       {:theta theta :history history}))))
