@@ -5,7 +5,7 @@
         clojure.test
         [clojure.math.numeric-tower :only (round)]))
 
-(def X
+(def x
   (matrix [[1 1 3]
            [1 2 2]
            [1 3 1]]))
@@ -16,7 +16,7 @@
                     [0]
                     [0]]))
 
-(def expected-normalized-X
+(def expected-normalized-x
   (matrix [[1.0 -1.0  1.0]
            [1.0  0.0  0.0]
            [1.0  1.0 -1.0]]))
@@ -46,21 +46,20 @@
 
 (deftest normalize-one-matrix
   (testing "properly scales all features"
-    (is (= (normalize-matrix X) expected-normalized-X))))
+    (is (= (normalize-matrix x) expected-normalized-x))))
 
 (deftest calculate-cost-of-prediction-theta
-  (testing "calculates the cost of predictions theta relating X and y"
-    (let [exact-cost (cost X y theta)
+  (testing "calculates the cost of predictions theta relating x and y"
+    (let [exact-cost (cost x y theta)
           rounded-cost (round exact-cost)] 
       (is (= rounded-cost 100)))))
 
 (deftest calculate-next-theta
   (testing "calculates the next set of thetas based on gradient descent"
-    (is (matrices-equal? (next-theta X y theta 0.01) expected-next-theta))))
+    (is (matrices-equal? (next-theta x y theta 0.01) expected-next-theta))))
 
 (deftest minimize-theta
   (testing "minimizes theta over the iterations given"
-    (let [res (gradient-descent X y theta 0.01 100)
+    (let [res (gradient-descent x y theta 0.01 100)
           {final-theta :theta history :history} res]
       (is (matrices-equal? final-theta expected-final-theta)))))
-
