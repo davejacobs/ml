@@ -15,7 +15,7 @@
 
 (deftest data-import
   (testing "data is read properly"
-    (let [{y :y x :x theta :theta iterations :iterations alpha :alpha} data]
-      (is (= (count data) 5))
+    (let [{:keys [x y theta iterations alpha]} ex2/data]
+      (is (= (count x) 100))
       (is (matrices-equal? (take 3 y) expected-y))
       (is (matrices-equal? (take 3 x) expected-x)))))

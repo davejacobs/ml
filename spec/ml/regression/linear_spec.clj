@@ -12,9 +12,10 @@
 
 (def y [10 20 10])
 
-(def theta (matrix [[0]
-                    [0]
-                    [0]]))
+(def theta 
+  (matrix [[0]
+           [0]
+           [0]]))
 
 (def expected-normalized-x
   (matrix [[1.0 -1.0  1.0]
