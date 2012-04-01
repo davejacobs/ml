@@ -28,7 +28,7 @@
 
 ; We include the multiplier (1/2) to make derivation
 ; easier. (Also, by including the entire function inline,
-; we can partially differentiate this function instead
+; we can (eventually) partially differentiate this function instead
 ; of hard-coding it.
 (defn mean-squared-error [matrix1 matrix2]
   (let [m (count matrix1)
