@@ -23,6 +23,8 @@
       (for [i (range n)]
         (normalize-vector (to-vect (sel x :cols i)))))))
 
+; This could also be (def h mmult), but I don't think that
+; would be as clear.
 (defn h [x theta]
   (mmult x theta))
 
