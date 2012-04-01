@@ -14,12 +14,12 @@
         theta (matrix [[0] [0] [0]])
         iterations 1500
         alpha 0.01]
-    {:y y
-     :x x 
+    {:x x 
+     :y y 
      :theta theta 
      :iterations iterations 
      :alpha alpha}))
 
-(let [{y :y x :x theta :theta iterations :iterations alpha :alpha} data]
+(let [{:keys [x y theta]} data]
   (println "Cost of initial theta \n" theta ": "
            (logistic/cost x y theta)))
