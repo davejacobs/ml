@@ -64,12 +64,11 @@
    (let [{:keys [alpha iterations]} defaults]
      (gradient-descent x y original-theta alpha iterations)))
   ([x y original-theta alpha iterations]
-   (let [normalized-x (normalize-matrix x)]
-     (loop [theta original-theta
-            idx 0
-            history []]
-       (if (< idx iterations)
-         (let [new-theta (next-theta normalized-x y theta alpha)
-               history-entry (cost normalized-x y new-theta)]
-           (recur new-theta (inc idx) (conj history history-entry)))
-         {:theta theta :history history})))))
+   (loop [theta original-theta
+          idx 0
+          history []]
+     (if (< idx iterations)
+       (let [new-theta (next-theta x y theta alpha)
+             history-entry (cost x y new-theta)]
+         (recur new-theta (inc idx) (conj history history-entry)))
+       {:theta theta :history history}))))

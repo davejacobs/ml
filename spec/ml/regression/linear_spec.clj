@@ -81,6 +81,7 @@
 (deftest minimize-theta
   (testing "minimizes theta over the iterations given"
     (let [{:keys [x y theta alpha iterations]} data
-          res (linear/gradient-descent x y theta alpha iterations)
+          normalized-x (linear/normalize-matrix x)
+          res (linear/gradient-descent normalized-x y theta alpha iterations)
           {last-theta :theta history :history} res]
       (is (matrices-equal? last-theta expected-last-theta)))))
