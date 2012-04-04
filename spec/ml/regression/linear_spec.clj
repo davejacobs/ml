@@ -53,10 +53,8 @@
   (testing "passes through an empty vector"
     (is (= (linear/normalize-vector []) [])))
   (testing "properly scales all values in a column"
-    (let [[a b c] (linear/normalize-vector [1 2 3])]
-      (is (= a -1.0))
-      (is (= b 0.0))
-      (is (= c 1.0)))))
+    (let [normalized-vector (linear/normalize-vector [1 2 3])]
+      (is (= normalized-vector [-1.0 0.0 1.0])))))
 
 (deftest normalize-one-matrix
   (testing "properly scales all features"
