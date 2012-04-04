@@ -10,8 +10,10 @@
         m (first (dim raw-data))
         x-first (vec (take m (repeat 1)))
         x-rest (to-matrix (sel raw-data :cols [0 1]))
-        x (bind-columns x-first x-rest)]
+        x (bind-columns x-first x-rest)
+        normalized-x (linear/normalize-matrix x)]
     {:x x 
+     :normalized-x normalized-x
      :y (sel raw-data :cols 2) 
      :theta (matrix [[0] [0] [0]]) 
      :iterations 100
@@ -64,22 +66,20 @@
 
 (deftest calculate-cost-of-prediction-theta
   (testing "calculates the cost of predictions theta relating x and y"
-    (let [{:keys [x y theta]} data
-          normalized-x (linear/normalize-matrix x)
+    (let [{:keys [normalized-x y theta]} data
           exact-cost (linear/cost normalized-x y theta)
           rounded-cost (round exact-cost)] 
       (is (close-to? rounded-cost 65591548106 -1)))))
 
 (deftest calculate-next-theta
   (testing "calculates the next set of thetas based on gradient descent"
-    (let [{:keys [x y theta]} data
-          normalized-x (linear/normalize-matrix x)]
-      (is (matrices-equal? (linear/next-theta normalized-x y theta 0.01) expected-first-theta)))))
+    (let [{:keys [normalized-x y theta]} data]
+      (is (matrices-equal? (linear/next-theta normalized-x y theta 0.01) 
+                           expected-first-theta)))))
 
 (deftest minimize-theta
   (testing "minimizes theta over the iterations given"
-    (let [{:keys [x y theta alpha iterations]} data
-          normalized-x (linear/normalize-matrix x)
+    (let [{:keys [normalized-x y theta alpha iterations]} data
           res (linear/gradient-descent normalized-x y theta alpha iterations)
           {last-theta :theta history :history} res]
       (is (matrices-equal? last-theta expected-last-theta)))))
