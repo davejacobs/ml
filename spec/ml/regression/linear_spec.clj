@@ -50,6 +50,8 @@
       (is (matrices-equal? (take 4 y) expected-y)))))
 
 (deftest normalize-one-value
+  (testing "passes through nil"
+    (is (= (linear/normalize nil nil nil) nil)))
   (testing "properly scales one value via mean and standard deviation"
     (is (= (linear/normalize 1 2 1) -1.0)))) 
 

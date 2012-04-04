@@ -6,8 +6,10 @@
 (def defaults {:alpha 0.01 :iterations 1500})
 
 (defn normalize [value mean stdev]
-  (float (/ (- value mean) 
-            stdev)))
+  (if (nil? value)
+    nil
+    (float (/ (- value mean) 
+              stdev))))
 
 (defn normalize-vector [column]
   (let [stdev (sd column)
