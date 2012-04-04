@@ -36,7 +36,7 @@
 
 (def expected-last-theta
   (matrix [[215810.6168] 
-           [61384.0309]
+           [61384.0308]
            [20273.5507]]))
 
 (deftest data-import
@@ -81,7 +81,6 @@
 (deftest minimize-theta
   (testing "minimizes theta over the iterations given"
     (let [{:keys [x y theta alpha iterations]} data
-          normalized-x (linear/normalize-matrix x)
-          res (linear/gradient-descent normalized-x y theta alpha iterations)
+          res (linear/gradient-descent x y theta alpha iterations)
           {last-theta :theta history :history} res]
       (is (matrices-equal? last-theta expected-last-theta)))))
