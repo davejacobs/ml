@@ -77,8 +77,8 @@
 
 (deftest calculate-next-theta
   (testing "calculates the next set of thetas based on gradient descent"
-    (let [{:keys [normalized-x y theta]} data]
-      (is (matrices-equal? (linear/next-theta normalized-x y theta 0.01) 
+    (let [{:keys [normalized-x y theta alpha]} data]
+      (is (matrices-equal? (linear/next-theta normalized-x y theta alpha) 
                            expected-first-theta)))))
 
 (deftest minimize-theta
