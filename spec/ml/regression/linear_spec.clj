@@ -45,7 +45,7 @@
 
 (deftest data-import
   (testing "data is read properly"
-    (let [{:keys [x y theta iterations alpha]} data]
+    (let [{:keys [x y]} data]
       (is (matrices-equal? (take 4 x) expected-x))
       (is (matrices-equal? (take 4 y) expected-y)))))
 
