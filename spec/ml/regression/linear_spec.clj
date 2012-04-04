@@ -29,7 +29,9 @@
 
 (def expected-normalized-x
   (matrix [[1.0000 0.1300 -0.2237]
-           [1.0000 -0.5042 -0.2237]]))
+           [1.0000 -0.5042 -0.2237]
+           [1.0000 0.5025 -0.2237]
+           [1.0000 -0.7357 -1.5378]]))
 
 (def expected-first-theta
   (matrix [[3404.1266]
@@ -61,7 +63,7 @@
 (deftest normalize-one-matrix
   (testing "properly scales all features"
     (let [normalized-x (linear/normalize-matrix (data :x))]
-      (is (matrices-equal? (take 2 normalized-x)
+      (is (matrices-equal? (take 4 normalized-x)
                            expected-normalized-x)))))
 
 (deftest calculate-cost-of-prediction-theta
