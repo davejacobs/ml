@@ -11,10 +11,11 @@
         x-first (vec (take m (repeat 1)))
         x-rest (to-matrix (sel raw-data :cols [0 1]))
         x (bind-columns x-first x-rest)
+        y (sel raw-data :cols 2) 
         normalized-x (linear/normalize-matrix x)]
     {:x x 
      :normalized-x normalized-x
-     :y (sel raw-data :cols 2) 
+     :y y
      :m m
      :theta (matrix [[0] [0] [0]]) 
      :iterations 100
