@@ -70,7 +70,7 @@
           normalized-x (linear/normalize-matrix x)
           exact-cost (linear/cost normalized-x y theta)
           rounded-cost (round exact-cost)] 
-      (is (close-to? rounded-cost 65000000000 -10)))))
+      (is (close-to? rounded-cost 65591548106 -1)))))
 
 (deftest calculate-next-theta
   (testing "calculates the next set of thetas based on gradient descent"
