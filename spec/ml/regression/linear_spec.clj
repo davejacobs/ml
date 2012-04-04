@@ -15,6 +15,7 @@
     {:x x 
      :normalized-x normalized-x
      :y (sel raw-data :cols 2) 
+     :m m
      :theta (matrix [[0] [0] [0]]) 
      :iterations 100
      :alpha 0.01}))
@@ -45,7 +46,8 @@
 
 (deftest data-import
   (testing "data is read properly"
-    (let [{:keys [x y]} data]
+    (let [{:keys [x y m]} data]
+      (is (= m 47))
       (is (matrices-equal? (take 4 x) expected-x))
       (is (matrices-equal? (take 4 y) expected-y)))))
 
