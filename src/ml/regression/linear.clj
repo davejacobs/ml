@@ -39,9 +39,6 @@
         multiplier (/ 1 (* 2 m))]
     (* multiplier (sum (sq (minus matrix1 matrix2))))))
 
-(defn mean-squared-error-prime [matrix1 matrix2]
-  (minus matrix1 matrix2))
-
 (defn cost
   ([x y theta]
    (cost x y theta mean-squared-error))
@@ -50,13 +47,11 @@
      (f hypothesis y))))
 
 (defn cost-prime
-  ([x y theta]
-   (cost-prime x y theta mean-squared-error-prime))
-  ([x y theta f]
-   (let [m (count x)
-         hypothesis (h x theta)
-         multiplier (/ 1 m)]
-     (mult multiplier (mmult (trans x) (f hypothesis y))))))
+  [x y theta]
+  (let [m (count x)
+        hypothesis (h x theta)
+        multiplier (/ 1 m)]
+    (mult multiplier (mmult (trans x) (minus hypothesis y)))))
 
 (defn next-theta [x y theta alpha]
   (minus theta (mult alpha (cost-prime x y theta))))
