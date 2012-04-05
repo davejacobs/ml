@@ -8,49 +8,49 @@
 (def data 
   (let [raw-data (read-data "data/ex1.2")
         m (first (dim raw-data))
-        x-first (vec (take m (repeat 1)))
-        x-rest (to-matrix (sel raw-data :cols [0 1]))
-        x (bind-columns x-first x-rest)
-        y (sel raw-data :cols 2) 
-        normalized-x (linear/normalize-matrix x)]
-    {:x x 
-     :normalized-x normalized-x
-     :y y
+        xs-first (vec (take m (repeat 1)))
+        xs-rest (to-matrix (sel raw-data :cols [0 1]))
+        xs (bind-columns xs-first xs-rest)
+        ys (sel raw-data :cols 2) 
+        normalized-xs (linear/normalize-matrix xs)]
+    {:xs xs
+     :normalized-xs normalized-xs
+     :ys ys
      :m m
-     :theta (matrix [[0] [0] [0]]) 
+     :thetas (matrix [[0] [0] [0]]) 
      :iterations 100
      :alpha 0.01}))
 
-(def expected-x
+(def expected-xs
   (matrix [[1.0 2104.0 3.0]
            [1.0 1600.0 3.0]
            [1.0 2400.0 3.0]
            [1.0 1416.0 2.0]]))
 
-(def expected-y [399900 329900 369000 232000])
+(def expected-ys [399900 329900 369000 232000])
 
-(def expected-normalized-x
+(def expected-normalized-xs
   (matrix [[1.0000 0.1300 -0.2237]
            [1.0000 -0.5042 -0.2237]
            [1.0000 0.5025 -0.2237]
            [1.0000 -0.7357 -1.5378]]))
 
-(def expected-first-theta
+(def expected-first-thetas
   (matrix [[3404.1266]
            [1046.3293]
            [541.2369]])) 
 
-(def expected-last-theta
+(def expected-last-thetas
   (matrix [[215810.6168] 
            [61384.0308]
            [20273.5507]]))
 
 (deftest data-import
   (testing "data is read properly"
-    (let [{:keys [x y m]} data]
+    (let [{:keys [xs ys m]} data]
       (is (= m 47))
-      (is (matrices-equal? (take 4 x) expected-x))
-      (is (matrices-equal? (take 4 y) expected-y)))))
+      (is (matrices-equal? (take 4 xs) expected-xs))
+      (is (matrices-equal? (take 4 ys) expected-ys)))))
 
 (deftest normalize-one-value
   (testing "passes through nil"
@@ -67,26 +67,26 @@
 
 (deftest normalize-one-matrix
   (testing "properly scales all features"
-    (let [normalized-x (linear/normalize-matrix (data :x))]
-      (is (matrices-equal? (take 4 normalized-x)
-                           expected-normalized-x)))))
+    (let [normalized-xs (linear/normalize-matrix (data :xs))]
+      (is (matrices-equal? (take 4 normalized-xs)
+                           expected-normalized-xs)))))
 
-(deftest calculate-cost-of-prediction-theta
-  (testing "calculates the cost of predictions theta relating x and y"
-    (let [{:keys [normalized-x y theta]} data
-          exact-cost (linear/cost normalized-x y theta)
+(deftest calculate-cost-of-prediction-thetas
+  (testing "calculates the cost of predictions thetas relating xs and ys"
+    (let [{:keys [normalized-xs ys thetas]} data
+          exact-cost (linear/cost normalized-xs ys thetas)
           rounded-cost (round exact-cost)] 
       (is (close-to? rounded-cost 65591548106 -1)))))
 
-(deftest calculate-next-theta
+(deftest calculate-next-thetas
   (testing "calculates the next set of thetas based on gradient descent"
-    (let [{:keys [normalized-x y theta alpha]} data]
-      (is (matrices-equal? (linear/next-theta normalized-x y theta alpha) 
-                           expected-first-theta)))))
+    (let [{:keys [normalized-xs ys thetas alpha]} data]
+      (is (matrices-equal? (linear/next-thetas normalized-xs ys thetas alpha) 
+                           expected-first-thetas)))))
 
-(deftest minimize-theta
-  (testing "minimizes theta over the iterations given"
-    (let [{:keys [normalized-x y theta alpha iterations]} data
-          res (linear/gradient-descent normalized-x y alpha iterations)
-          {last-theta :theta history :history} res]
-      (is (matrices-equal? last-theta expected-last-theta)))))
+(deftest minimize-thetas
+  (testing "minimizes thetas over the iterations given"
+    (let [{:keys [normalized-xs ys thetas alpha iterations]} data
+          res (linear/gradient-descent normalized-xs ys alpha iterations)
+          {last-thetas :thetas history :history} res]
+      (is (matrices-equal? last-thetas expected-last-thetas)))))
