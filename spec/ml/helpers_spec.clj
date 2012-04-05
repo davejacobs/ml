@@ -13,7 +13,9 @@
     (testing "returns true for identical rationals"
       (is (close-to? 1/3 1/3)))
     (testing "returns true for floats equal to at least 4 figures"
-      (is (close-to? 0.00001 0.00002))))
+      (is (close-to? 0.00001 0.00002)))
+    (testing "returns false for floats equal only to 3 figures"
+      (is (not (close-to? 0.0001 0.0002)))))
 
   (testing "with a positive value for sig figs (2)"
     (testing "returns true for floats equal to 2 figures"
