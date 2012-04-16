@@ -26,9 +26,40 @@
 
 (def expected-ys [0 0 0 1])
 
+(def expected-first-cost-prime
+  (matrix [[ -0.1000]
+           [-12.0092]
+           [-11.2628]]))
+
+(def expected-final-thetas
+  (matrix [[0]
+           [0]
+           [0]]))
+
 (deftest data-import
   (testing "data is read properly"
     (let [{:keys [xs ys m]} data]
       (is (= m 100))
       (is (matrices-equal? (take 4 xs) expected-xs))
       (is (matrices-equal? (take 4 ys) expected-ys)))))
+
+(deftest calculate-first-cost-prime
+  (testing "calculates the first cost gradient"
+    (let [{:keys [xs ys]} data
+          thetas (matrix [[0] [0] [0]])
+          first-cost-prime (logistic/cost-prime xs ys thetas)]
+      (is (matrices-equal? first-cost-prime expected-first-cost-prime)))))
+
+(deftest calculate-first-thetas
+  (testing "calculates the first thetas"
+    (let [{:keys [xs ys]} data
+          thetas (matrix [[0] [0] [0]])
+          first-thetas (logistic/next-thetas xs ys thetas)]
+      (is (matrices-equal? first-thetas (minus expected-first-cost-prime))))))
+
+(deftest calculate-initial-cost
+  (testing "calculates the cost of thetas relating xs and ys"
+    (let [{:keys [xs ys]} data
+          thetas (matrix [[0] [0] [0]])
+          first-cost (logistic/cost xs ys thetas)]
+      (is (close-to? first-cost 0.693147)))))
