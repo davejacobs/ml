@@ -7,4 +7,4 @@
                  "https://oss.sonatype.org/content/groups/public/"}
   :test-paths ["spec"]
   :min-lein-version "2.0.0"
-  :jvm-opts ["-D java.awt.headless=true"])
+  :jvm-opts ["-Djava.awt.headless=true"])
