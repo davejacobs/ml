@@ -46,8 +46,7 @@
    (let [hypothesis (h xs thetas)]
      (f hypothesis ys))))
 
-(defn cost-prime
-  [xs ys thetas]
+(defn cost-prime [xs ys thetas]
   (let [m (count xs)
         hypothesis (h xs thetas)
         multiplier (/ 1 m)]

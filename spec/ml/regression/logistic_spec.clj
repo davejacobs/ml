@@ -15,7 +15,6 @@
     {:xs xs 
      :ys ys
      :m m
-     :theta (matrix [[0] [0] [0]]) 
      :iterations 100
      :alpha 0.01}))
 
