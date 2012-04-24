@@ -3,6 +3,8 @@
         incanter.io
         incanter.stats))
 
+(def defaults {:alpha 0.01 :iterations 1500})
+
 (defn g [z]
   (/ 1 (+ 1 (exp (- z)))))
 
@@ -15,13 +17,47 @@
         multiplier (/ 1.0 m)]
     (mult multiplier (mmult (trans xs) (minus hypothesis ys)))))
 
-(defn cost [xs ys thetas]
-  (let [m (count xs)
-        hypothesis (h xs thetas)
-        first-fn (mmult (trans (minus ys)) (log hypothesis)) 
-        second-fn (mmult (trans (minus 1 ys)) (log (minus 1 hypothesis)))
-        multiplier (/ 1.0 m)]
-    (* multiplier (minus first-fn second-fn))))
+(defn cost 
+  ([xs ys thetas] 
+   (cost xs ys thetas 0.01))
+  ([xs ys thetas lambda] 
+   (let [m (count xs)
+         hypothesis (h xs thetas)
+         first-fn (mmult (trans (minus ys)) (log hypothesis)) 
+         second-fn (mmult (trans (minus 1 ys)) (log (minus 1 hypothesis)))
+         multiplier (/ 1.0 m)
+         squared-sum (sum (sq (rest thetas)))
+         regularization (/ lambda (* 2 m))]
+     (* multiplier (minus first-fn second-fn)))))
 
-(defn next-thetas [xs ys thetas]
-  (minus thetas (cost-prime xs ys thetas)))
+(defn next-thetas [xs ys thetas alpha]
+  (minus (matrix thetas) (mult alpha (cost-prime xs ys thetas))))
+
+; This is copied from ml.regression.linear. I will dry this up
+; as soon as specs are green
+(defn gradient-descent 
+  ([xs ys]
+   (let [{:keys [alpha iterations]} defaults]
+     (gradient-descent xs ys alpha iterations)))
+  ([xs ys alpha iterations]
+   (let [original-thetas (matrix 0 (second (dim xs)) 1)]
+     (gradient-descent xs ys alpha iterations original-thetas)))
+  ([xs ys alpha iterations original-thetas]
+   (loop [thetas original-thetas
+          idx 0
+          history []]
+     (if (< idx iterations)
+       (let [new-thetas (next-thetas xs ys thetas alpha)
+             history-entry (cost xs ys new-thetas)]
+         (recur new-thetas (inc idx) (conj history history-entry)))
+       {:thetas thetas, :history history}))))
+
+(defn probabilities [points thetas category]
+  (let [probability-of-one (h points thetas)]
+    (if (zero? category)
+      (minus 1 probability-of-one)
+      probability-of-one)))
+
+(defn predict-category [points thetas threshold]
+  (let [prediction-fn #(if (> threshold %) 1 0)]
+    (matrix-map prediction-fn (probabilities points thetas 1))))
