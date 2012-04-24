@@ -23,7 +23,8 @@
   ([matrix1 matrix2] 
    (matrices-equal? matrix1 matrix2 *sig-figs*))
   ([matrix1 matrix2 sig-figs]
-   (let [transf-fn #(round (* % (pow 10 sig-figs)))
-         transf-matrix1 (matrix-map transf-fn matrix1)
-         transf-matrix2 (matrix-map transf-fn matrix2)]
-     (= transf-matrix1 transf-matrix2))))
+   (let [matrices (map matrix [matrix1 matrix2])
+         transf-fn #(round (* % (pow 10 sig-figs)))
+         transform-and-vectorize-fn #(matrix-map transf-fn %)
+         transf-matrices (map transform-and-vectorize-fn matrices)]
+     (= (first transf-matrices) (second transf-matrices)))))
