@@ -34,8 +34,11 @@
 ; for now.
 (defn map-features 
   ([xs] xs)
-  ([xs degree]
-   (let [all (matrix xs)
-         one (sel all :cols 0)
-         two (sel all :cols 1)]
+  ([xs degree & remaining]
+   (let [options (apply hash-map remaining)
+         first-idx (if (options :ignore-first) 1 0)
+         second-idx (inc first-idx)
+         all (matrix xs)
+         one (sel all :cols first-idx)
+         two (sel all :cols second-idx)]
        (trans (matrix [one, (pow one 2), (mult one two), (pow two 2), two])))))

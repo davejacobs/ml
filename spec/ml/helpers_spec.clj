@@ -51,10 +51,19 @@
         (let [original [[1.0 2.0] [3.0 4.0]]]
           (is (matrices-equal? (map-features original) original)))))
     (testing "when a degree of 2 is specified"
-      (testing "returns the matrix with the *first two* columns permuted to the degree specified (as a stop-gap measure)"
-        (let [original [[1.0 2.0]
-                        [3.0 4.0]]
-                        ;x1  x1^2 x1*x2 x2^2 x2
-              expected [[1.0 1.0  2.0   4.0  2.0]
-                        [3.0 9.0  12.0  16.0 4.0]]]
-          (is (matrices-equal? (map-features original 2) expected)))))))
+      (testing "when :ignore-first is not passed as an option"
+        (testing "returns the matrix with the *first two* columns permuted to the degree specified (as a stop-gap measure)"
+          (let [original [[1.0 2.0]
+                          [3.0 4.0]]
+                          ;x1  x1^2 x1*x2 x2^2 x2
+                expected [[1.0 1.0  2.0   4.0  2.0]
+                          [3.0 9.0  12.0  16.0 4.0]]]
+            (is (matrices-equal? (map-features original 2) expected)))))
+      (testing "when :ignore-first is passed as an option"
+        (testing "returns the matrix with the *second and third* columns permuted to the degree specified (as a stop-gap measure"
+          (let [original [[1.0 1.0 2.0]
+                          [1.0 3.0 4.0]]
+                          ;x1  x1^2 x1*x2 x2^2 x2
+                expected [[1.0 1.0  2.0   4.0  2.0]
+                          [3.0 9.0  12.0  16.0 4.0]]]
+            (is (matrices-equal? (map-features original 2 :ignore-first true) expected))))))))
