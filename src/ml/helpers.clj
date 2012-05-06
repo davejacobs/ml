@@ -28,3 +28,14 @@
          transform-and-vectorize-fn #(matrix-map transf-fn %)
          transf-matrices (map transform-and-vectorize-fn matrices)]
      (= (first transf-matrices) (second transf-matrices)))))
+
+; I haven't come up with a good algorithm for mapping features yet
+; so I'm manually mapping the first two columns into derivative features
+; for now.
+(defn map-features 
+  ([xs] xs)
+  ([xs degree]
+   (let [all (matrix xs)
+         one (sel all :cols 0)
+         two (sel all :cols 1)]
+       (trans (matrix [one, (pow one 2), (mult one two), (pow two 2), two])))))
