@@ -32,7 +32,8 @@
 (defn with-bias-unit [xs]
   (let [m (first (dim xs))
         bias-unit (vec (take m (repeat 1)))]
-    (bind-columns bias-unit (to-matrix xs))))
+    (bind-columns bias-unit (if (instance? incanter.core.Dataset xs)
+                              (to-matrix xs) xs))))
 
 ; I haven't come up with a good algorithm for mapping features yet
 ; so I'm manually mapping the first two columns into derivative features

@@ -15,13 +15,12 @@
 (deftest logistic-regression
   (let [{:keys [xs ys m alpha iterations]} data]
     (testing "data import"
-      (let [{:keys [xs ys m]} data
-            expected-xs [[1.0 34.6237 78.0247]
-                         [1.0 30.2867 43.8950]
-                         [1.0 35.8474 72.9022]
-                         [1.0 60.1826 86.3086]]
-            expected-ys [0 0 0 1]]
-        (is (= m 100))
+      (let [expected-xs [[1.0000  0.0513 0.6996]
+                         [1.0000 -0.0927 0.6849]
+                         [1.0000 -0.2137 0.6923]
+                         [1.0000 -0.3750 0.5022]]
+            expected-ys [1 1 1 1]]
+        (is (= m 118))
         (is (matrices-equal? (take 4 xs) expected-xs))
         (is (matrices-equal? (take 4 ys) expected-ys))))
 
@@ -31,8 +30,8 @@
 
     (testing "h"
       (testing "performs the matrix product of data"
-        (let [xs [[0] [0]]
-              thetas [[0 0]]]
+        (let [xs [[0] [1]]
+              thetas [[2 3]]]
           (= (logistic/h xs thetas) (mmult xs thetas))))
       (testing "returns a scalar when the matrix product is 1 x 1"
         (= (class (logistic/h [[0] [0]] [[0 0]])) java.lang.Double))
@@ -44,13 +43,13 @@
     (testing "cost-prime"
       (testing "calculates the first cost gradient"
         (let [cost-prime (logistic/cost-prime xs ys [[0] [0] [0]])
-              expected [[-0.1000] [-12.0092] [-11.2628]]]
+              expected [[0.0085] [0.0188] [0.0001]]]
           (is (matrices-equal? cost-prime expected)))))
 
     (testing "next-thetas"
       (testing "calculates the first thetas using alpha"
         (let [next-thetas (logistic/next-thetas xs ys [[0] [0] [0]] alpha)
-              expected [[0.0010] [0.1201] [0.1126]]]
+              expected [[-0.0001] [-0.0002] [-0.0000]]]
           (is (matrices-equal? next-thetas expected)))))
 
     (testing "cost"
@@ -58,9 +57,12 @@
         (let [first-cost (logistic/cost xs ys [[0] [0] [0]])]
           (is (close-to? first-cost 0.693147))))
       (testing "calculates the regularized cost of thetas"
-        (let [lambda 0.1
-              regularized-cost (logistic/cost xs ys [[0] [0] [0]] lambda)]
-          (is (close-to? regularized-cost 0.0)))))
+        (let [lambda 0.01
+              degree 6
+              augmented-xs (map-features xs degree :ignore-first true) 
+              thetas (matrix 0.5 (second (dim augmented-xs)) 1)
+              regularized-cost (logistic/cost augmented-xs ys thetas lambda)]
+          (is (close-to? regularized-cost 1.2318)))))))
 
     (testing "gradient-descent"
       (testing "minimizes thetas"

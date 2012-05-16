@@ -19,16 +19,18 @@
 
 (defn cost 
   ([xs ys thetas] 
-   (cost xs ys thetas 0.01))
+   (cost xs ys thetas 1))
   ([xs ys thetas lambda] 
    (let [m (count xs)
          hypothesis (h xs thetas)
          first-fn (mmult (trans (minus ys)) (log hypothesis)) 
          second-fn (mmult (trans (minus 1 ys)) (log (minus 1 hypothesis)))
          multiplier (/ 1.0 m)
+         sum-differences (minus first-fn second-fn)
          squared-sum (sum (sq (rest thetas)))
-         regularization (/ lambda (* 2 m))]
-     (* multiplier (minus first-fn second-fn)))))
+         regularization (* (/ lambda (* 2 m)) squared-sum)
+         differences (mult multiplier sum-differences)]
+     (plus differences regularization))))
 
 (defn next-thetas [xs ys thetas alpha]
   (minus (matrix thetas) (mult alpha (cost-prime xs ys thetas))))
