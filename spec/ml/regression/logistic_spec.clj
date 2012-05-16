@@ -6,11 +6,9 @@
         [clojure.math.numeric-tower :only (round)]))
 
 (def data 
-  (let [raw-data (read-data "data/ex2.1")
+  (let [raw-data (read-data "data/ex2.2")
         m (first (dim raw-data))
-        xs-first (vec (take m (repeat 1)))
-        xs-rest (to-matrix (sel raw-data :cols [0 1]))
-        xs (bind-columns xs-first xs-rest)
+        xs (with-bias-unit (sel raw-data :cols [0 1]))
         ys (sel raw-data :cols 2)]
     {:xs xs, :ys ys, :m m, :iterations 100, :alpha 0.01}))
 
