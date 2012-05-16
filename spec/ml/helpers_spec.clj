@@ -45,6 +45,14 @@
       (is (h/matrices-equal? [[0.1 0.1] [0.2 0.2]]
                            (matrix [[0.1 0.1] [0.2 0.2]])))))
 
+  (testing "with-bias-unit"
+    (testing "for a one-dimentional vector"
+      (testing "returns a matrix with the bias unit as the first column"
+        (is (h/matrices-equal? (h/with-bias-unit [0 1 2]) [[1 0] [1 1] [1 2]]))))
+    (testing "for a matrix"
+      (testing "returns a matrix with the bias unit as the first column"
+        (is (h/matrices-equal? (h/with-bias-unit [[0 1] [2 3]]) [[1 0 1] [1 2 3]])))))
+
   (testing "map-features"
     (testing "when a degree is not specified"
       (testing "returns the same matrix"

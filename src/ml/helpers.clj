@@ -29,6 +29,11 @@
          transf-matrices (map transform-and-vectorize-fn matrices)]
      (= (first transf-matrices) (second transf-matrices)))))
 
+(defn with-bias-unit [xs]
+  (let [m (first (dim xs))
+        bias-unit (vec (take m (repeat 1)))]
+    (bind-columns bias-unit (to-matrix xs))))
+
 ; I haven't come up with a good algorithm for mapping features yet
 ; so I'm manually mapping the first two columns into derivative features
 ; for now.
@@ -40,5 +45,10 @@
          second-idx (inc first-idx)
          all (matrix xs)
          one (sel all :cols first-idx)
-         two (sel all :cols second-idx)]
-       (trans (matrix [one, (pow one 2), (mult one two), (pow two 2), two])))))
+         two (sel all :cols second-idx)
+         derived (for [i (range 1 (inc degree)) j (range (inc i))]
+                   (mult (pow one (- i j)) (pow two j)))
+         fixed-orientation (trans (matrix derived))]
+     (if (options :ignore-first)
+       (with-bias-unit fixed-orientation)
+       fixed-orientation))))

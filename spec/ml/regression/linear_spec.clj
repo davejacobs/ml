@@ -8,9 +8,7 @@
 (def data 
   (let [raw-data (read-data "data/ex1.2")
         m (first (dim raw-data))
-        xs-first (vec (take m (repeat 1)))
-        xs-rest (to-matrix (sel raw-data :cols [0 1]))
-        xs (bind-columns xs-first xs-rest)
+        xs (with-bias-unit (sel raw-data :cols [0 1]))
         ys (sel raw-data :cols 2) 
         normalized-xs (linear/normalize-matrix xs)]
     {:xs xs
