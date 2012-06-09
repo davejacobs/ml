@@ -55,11 +55,11 @@
        {:thetas thetas, :history history}))))
 
 (defn probabilities [points thetas category]
-  (let [probability-of-one (h points thetas)]
+  (let [probabilities-of-one (h points thetas)]
     (if (zero? category)
-      (minus 1 probability-of-one)
-      probability-of-one)))
+      (minus 1 probabilities-of-one)
+      probabilities-of-one)))
 
 (defn predict-category [points thetas threshold]
-  (let [prediction-fn #(if (> threshold %) 1 0)]
+  (let [prediction-fn #(if (> % threshold) 1 0)]
     (matrix-map prediction-fn (probabilities points thetas 1))))

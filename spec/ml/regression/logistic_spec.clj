@@ -62,26 +62,19 @@
               augmented-xs (map-features xs degree :ignore-first true) 
               thetas (matrix 0.5 (second (dim augmented-xs)) 1)
               regularized-cost (logistic/cost augmented-xs ys thetas lambda)]
-          (is (close-to? regularized-cost 1.2318)))))))
-
-    (testing "gradient-descent"
-      (testing "minimizes thetas"
-        (testing "yields history and final thetas after given iterations"
-          (let [descent (logistic/gradient-descent xs ys alpha iterations)
-                {last-thetas :thetas history :history} descent
-                expected [[0] [0] [0]]]
-            (is (matrices-equal? last-thetas expected))))))
+          (is (close-to? regularized-cost 1.2318)))))
 
     (testing "probabilities"
-      (testing "predicts a probability of points being in a category given thetas"
-        (let [points [[1 45 85]]
+      (testing "predicts the probability of a point being in a category given thetas"
+        (let [points [[1 0.5 2]]
               category 1
-              probability (logistic/probabilities points [[0] [0] [0]] category)]
-          (is (close-to? probability 0.776289)))))
+              probability (logistic/probabilities points [[0] [0.5] [1]] category)
+              expected-probability 0.9047]
+          (is (close-to? probability expected-probability)))))
 
     (testing "predict-category"
       (testing "predicts the category of points given thetas"
-        (let [points [[1 45 85]]
+        (let [points [[1 0.5 2]]
               threshold 0.5
-              category (logistic/predict-category points [[0] [0] [0]] threshold)]
+              category (logistic/predict-category points [[0] [0.5] [1]] threshold)]
           (is (close-to? category 1)))))))
