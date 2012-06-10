@@ -5,86 +5,60 @@
         clojure.test
         [clojure.math.numeric-tower :only (round)]))
 
-(def data 
+(deftest linear-regression
   (let [raw-data (read-data "data/ex1.2")
         m (first (dim raw-data))
         xs (with-bias-unit (sel raw-data :cols [0 1]))
-        ys (sel raw-data :cols 2) 
+        ys (sel raw-data :cols 2)
+        iterations 100
+        alpha 0.01
         normalized-xs (linear/normalize-matrix xs)]
-    {:xs xs
-     :normalized-xs normalized-xs
-     :ys ys
-     :m m
-     :thetas (matrix [[0] [0] [0]]) 
-     :iterations 100
-     :alpha 0.01}))
+    (testing "data is read properly"
+      (let [expected [[1.0 2104.0 3.0]
+                      [1.0 1600.0 3.0]
+                      [1.0 2400.0 3.0]
+                      [1.0 1416.0 2.0]]]
+        (is (= m 47))
+        (is (matrices-equal? (take 4 xs) expected))
+        (is (matrices-equal? (take 4 ys) [399900 329900 369000 232000]))))
 
-(def expected-xs
-  (matrix [[1.0 2104.0 3.0]
-           [1.0 1600.0 3.0]
-           [1.0 2400.0 3.0]
-           [1.0 1416.0 2.0]]))
+    (testing "normalize"
+      (testing "passes through nil"
+        (is (= (linear/normalize nil nil nil) nil)))
+      (testing "properly scales one value via mean and standard deviation"
+        (is (= (linear/normalize 1 2 1) -1.0)))) 
 
-(def expected-ys [399900 329900 369000 232000])
+    (testing "normalize-vector"
+      (testing "passes through an empty vector"
+        (is (= (linear/normalize-vector []) [])))
+      (testing "properly scales all values in a column"
+        (let [normalized-vector (linear/normalize-vector [1 2 3])]
+          (is (= normalized-vector [-1.0 0.0 1.0])))))
 
-(def expected-normalized-xs
-  (matrix [[1.0000 0.1300 -0.2237]
-           [1.0000 -0.5042 -0.2237]
-           [1.0000 0.5025 -0.2237]
-           [1.0000 -0.7357 -1.5378]]))
+    (testing "normalize-xs"
+      (testing "properly scales all features"
+        (let [expected [[1.0000 0.1300 -0.2237]
+                        [1.0000 -0.5042 -0.2237]
+                        [1.0000 0.5025 -0.2237]
+                        [1.0000 -0.7357 -1.5378]]]
+          (is (matrices-equal? (take 4 (linear/normalize-matrix xs)) expected)))))
 
-(def expected-first-thetas
-  (matrix [[3404.1266]
-           [1046.3293]
-           [541.2369]])) 
+    (testing "cost"
+      (testing "calculates the cost of predictions (thetas) relating xs and ys"
+        (let [thetas (matrix [[0] [0] [0]])
+              exact-cost (linear/cost normalized-xs ys thetas)
+              rounded-cost (round exact-cost)] 
+          (is (close-to? rounded-cost 65591548106 -1)))))
 
-(def expected-last-thetas
-  (matrix [[215810.6168] 
-           [61384.0308]
-           [20273.5507]]))
+    (testing "next-thetas"
+      (testing "calculates the next set of thetas based on gradient descent"
+        (let [thetas (matrix [[0] [0] [0]])
+              expected [[3404.1266] [1046.3293] [541.2369]]]
+          (is (matrices-equal? 
+                (linear/next-thetas normalized-xs ys thetas alpha) expected)))))
 
-(deftest data-import
-  (testing "data is read properly"
-    (let [{:keys [xs ys m]} data]
-      (is (= m 47))
-      (is (matrices-equal? (take 4 xs) expected-xs))
-      (is (matrices-equal? (take 4 ys) expected-ys)))))
-
-(deftest normalize-one-value
-  (testing "passes through nil"
-    (is (= (linear/normalize nil nil nil) nil)))
-  (testing "properly scales one value via mean and standard deviation"
-    (is (= (linear/normalize 1 2 1) -1.0)))) 
-
-(deftest normalize-one-vector
-  (testing "passes through an empty vector"
-    (is (= (linear/normalize-vector []) [])))
-  (testing "properly scales all values in a column"
-    (let [normalized-vector (linear/normalize-vector [1 2 3])]
-      (is (= normalized-vector [-1.0 0.0 1.0])))))
-
-(deftest normalize-one-matrix
-  (testing "properly scales all features"
-    (let [normalized-xs (linear/normalize-matrix (data :xs))]
-      (is (matrices-equal? (take 4 normalized-xs)
-                           expected-normalized-xs)))))
-
-(deftest calculate-cost-of-prediction-thetas
-  (testing "calculates the cost of predictions thetas relating xs and ys"
-    (let [{:keys [normalized-xs ys thetas]} data
-          exact-cost (linear/cost normalized-xs ys thetas)
-          rounded-cost (round exact-cost)] 
-      (is (close-to? rounded-cost 65591548106 -1)))))
-
-(deftest calculate-next-thetas
-  (testing "calculates the next set of thetas based on gradient descent"
-    (let [{:keys [normalized-xs ys thetas alpha]} data]
-      (is (matrices-equal? (linear/next-thetas normalized-xs ys thetas alpha) 
-                           expected-first-thetas)))))
-
-(deftest minimize-thetas
-  (testing "minimizes thetas over the iterations given"
-    (let [{:keys [normalized-xs ys thetas alpha iterations]} data
-          res (linear/gradient-descent normalized-xs ys alpha iterations)
-          {last-thetas :thetas history :history} res]
-      (is (matrices-equal? last-thetas expected-last-thetas)))))
+    (testing "minimizes thetas over the iterations given"
+      (let [expected [[215810.6168] [61384.0308] [20273.5507]]
+            res (linear/gradient-descent normalized-xs ys alpha iterations)
+            {last-thetas :thetas history :history} res]
+        (is (matrices-equal? last-thetas expected))))))
