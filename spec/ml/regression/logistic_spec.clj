@@ -5,15 +5,13 @@
         clojure.test
         [clojure.math.numeric-tower :only (round)]))
 
-(def data 
+(deftest logistic-regression
   (let [raw-data (read-data "data/ex2.2")
         m (first (dim raw-data))
         xs (with-bias-unit (sel raw-data :cols [0 1]))
-        ys (sel raw-data :cols 2)]
-    {:xs xs, :ys ys, :m m, :iterations 100, :alpha 0.01}))
-
-(deftest logistic-regression
-  (let [{:keys [xs ys m alpha iterations]} data]
+        ys (sel raw-data :cols 2)
+        iterations 100
+        alpha 0.01]
     (testing "data import"
       (let [expected-xs [[1.0000  0.0513 0.6996]
                          [1.0000 -0.0927 0.6849]
@@ -41,19 +39,19 @@
         (= (class (logistic/h [[0 0]] [[0] [0]])) incanter.Matrix)))
 
     (testing "cost-prime"
-      (testing "calculates the first cost gradient"
+      (testing "calculates the cost gradient"
         (let [cost-prime (logistic/cost-prime xs ys [[0] [0] [0]])
               expected [[0.0085] [0.0188] [0.0001]]]
           (is (matrices-equal? cost-prime expected)))))
 
     (testing "next-thetas"
-      (testing "calculates the first thetas using alpha"
+      (testing "guesses new parameters theta based on the cost of the current thetas"
         (let [next-thetas (logistic/next-thetas xs ys [[0] [0] [0]] alpha)
               expected [[-0.0001] [-0.0002] [-0.0000]]]
           (is (matrices-equal? next-thetas expected)))))
 
     (testing "cost"
-      (testing "calculates the cost of thetas relating xs and ys"
+      (testing "calculates the cost of thetas that predict ys using xs"
         (let [first-cost (logistic/cost xs ys [[0] [0] [0]])]
           (is (close-to? first-cost 0.693147))))
       (testing "calculates the regularized cost of thetas"
@@ -65,16 +63,24 @@
           (is (close-to? regularized-cost 1.2318)))))
 
     (testing "probabilities"
-      (testing "predicts the probability of a point being in a category given thetas"
+      (testing "predicts the probability of a single point being in a category given thetas"
         (let [points [[1 0.5 2]]
+              thetas [[0] [0.5] [1]]
               category 1
-              probability (logistic/probabilities points [[0] [0.5] [1]] category)
-              expected-probability 0.9047]
-          (is (close-to? probability expected-probability)))))
+              probability (logistic/probabilities points thetas category)]
+          (is (close-to? probability 0.9047))))
+      (testing "predicts the probability of a multiple points being in a category given thetas"
+        (let [points [[1 0.5 2] 
+                      [1 0.75 2]]
+              thetas [[0] [0.5] [1]]
+              category 1
+              probabilities (logistic/probabilities points thetas category)]
+          (is (matrices-equal? probabilities [0.9047 0.9149])))))
 
     (testing "predict-category"
       (testing "predicts the category of points given thetas"
         (let [points [[1 0.5 2]]
+              thetas [[0] [0.5] [1]]
               threshold 0.5
-              category (logistic/predict-category points [[0] [0.5] [1]] threshold)]
+              category (logistic/predict-category points thetas threshold)]
           (is (close-to? category 1)))))))
