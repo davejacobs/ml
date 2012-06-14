@@ -44,21 +44,19 @@
           (is (matrices-equal? (take 4 (linear/normalize-matrix xs)) expected)))))
 
     (testing "cost"
-      (testing "calculates the cost of predictions (thetas) relating xs and ys"
+      (testing "calculates the cost of weights (thetas) relating xs and ys"
         (let [thetas (matrix [[0] [0] [0]])
               exact-cost (linear/cost normalized-xs ys thetas)
               rounded-cost (round exact-cost)] 
-          (is (close-to? rounded-cost 65591548106 -1)))))
-
-    (testing "next-thetas"
-      (testing "calculates the next set of thetas based on gradient descent"
+          (is (close-to? rounded-cost 65591548106 -1))))
+      
+      (testing "accepts a custom cost function"
         (let [thetas (matrix [[0] [0] [0]])
-              expected [[3404.1266] [1046.3293] [541.2369]]]
-          (is (matrices-equal? 
-                (linear/next-thetas normalized-xs ys thetas alpha) expected)))))
-
-    (testing "minimizes thetas over the iterations given"
+              cost-fn #(sum (minus %2 %1))
+              actual-cost (linear/cost normalized-xs ys thetas :cost-fn cost-fn)]
+          (is (close-to? actual-cost 15999395)))))
+    
+    (testing "descend"
       (let [expected [[215810.6168] [61384.0308] [20273.5507]]
-            res (linear/gradient-descent normalized-xs ys alpha iterations)
-            {last-thetas :thetas history :history} res]
+            last-thetas (linear/descend normalized-xs ys)]
         (is (matrices-equal? last-thetas expected))))))
