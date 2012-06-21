@@ -4,9 +4,12 @@
 (defn h [xs thetas]
   (mmult xs thetas))
 
-(defn gradient [xs ys thetas]
-  (let [m (count xs)
-        hypothesis (h xs thetas)
+(defn gradient [xs ys thetas & args]
+  (let [defaults {:hypothesis-fn h}
+        options (merge defaults (apply hash-map args))
+        {:keys [hypothesis-fn]} options
+        m (count xs)
+        hypothesis (hypothesis-fn xs thetas)
         multiplier (/ 1 m)]
     (mult multiplier (mmult (trans xs) (minus hypothesis ys)))))
 

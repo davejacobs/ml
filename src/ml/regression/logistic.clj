@@ -1,9 +1,6 @@
 (ns ml.regression.logistic
-  (:use incanter.core
-        incanter.io
-        incanter.stats))
-
-(def defaults {:alpha 0.01 :iterations 1500})
+  (:require [ml.optimization :as optimization])
+  (:use [incanter core io stats]))
 
 (defn g [z]
   (/ 1 (+ 1 (exp (- z)))))
@@ -11,48 +8,32 @@
 (defn h [xs thetas]
   (matrix-map g (mmult xs thetas)))
 
-(defn cost-prime [xs ys thetas]
+(defn logarithmic-cost [xs ys thetas]
   (let [m (count xs)
+        multiplier (/ 1 m)
         hypothesis (h xs thetas)
-        multiplier (/ 1.0 m)]
-    (mult multiplier (mmult (trans xs) (minus hypothesis ys)))))
+        if-0-fn (mmult (trans (minus ys)) (log hypothesis)) 
+        if-1-fn (mmult (trans (minus 1 ys)) (log (minus 1 hypothesis)))
+        sum-differences (minus if-0-fn if-1-fn)]
+    (mult multiplier sum-differences)))
 
-(defn cost 
-  ([xs ys thetas] 
-   (cost xs ys thetas 1))
-  ([xs ys thetas lambda] 
-   (let [m (count xs)
-         hypothesis (h xs thetas)
-         first-fn (mmult (trans (minus ys)) (log hypothesis)) 
-         second-fn (mmult (trans (minus 1 ys)) (log (minus 1 hypothesis)))
-         multiplier (/ 1.0 m)
-         sum-differences (minus first-fn second-fn)
-         squared-sum (sum (sq (rest thetas)))
-         regularization (* (/ lambda (* 2 m)) squared-sum)
-         differences (mult multiplier sum-differences)]
-     (plus differences regularization))))
+(defn regularize [thetas lambda]
+  (let [m (count thetas)
+        squared-sum (sum (sq (rest thetas)))]
+    (* (/ lambda (* 2 m)) squared-sum)))
 
-(defn next-thetas [xs ys thetas alpha]
-  (minus (matrix thetas) (mult alpha (cost-prime xs ys thetas))))
+(defn cost [xs ys thetas & args]
+  (let [defaults {:cost-fn logarithmic-cost
+                  :lambda 1}
+        options (merge defaults (apply hash-map args))
+        {:keys [cost-fn lambda]} options]
+    (cost-fn xs ys thetas)))
 
-; This is copied from ml.regression.linear. I will dry this up
-; as soon as specs are green
-(defn gradient-descent 
-  ([xs ys]
-   (let [{:keys [alpha iterations]} defaults]
-     (gradient-descent xs ys alpha iterations)))
-  ([xs ys alpha iterations]
-   (let [original-thetas (matrix 0 (second (dim xs)) 1)]
-     (gradient-descent xs ys alpha iterations original-thetas)))
-  ([xs ys alpha iterations original-thetas]
-   (loop [thetas original-thetas
-          idx 0
-          history []]
-     (if (< idx iterations)
-       (let [new-thetas (next-thetas xs ys thetas alpha)
-             history-entry (cost xs ys new-thetas)]
-         (recur new-thetas (inc idx) (conj history history-entry)))
-       {:thetas thetas, :history history}))))
+(defn gradient [xs ys thetas & args]
+  (apply optimization/gradient xs ys thetas :hypothesis-fn h args))
+
+(defn descend [xs ys & args]
+  (apply optimization/descend xs ys :cost-fn cost args))
 
 (defn probabilities [points thetas category]
   (let [probabilities-of-one (h points thetas)]

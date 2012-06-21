@@ -38,17 +38,11 @@
       (testing "returns a matrix when the matrix product is m x n"
         (= (class (logistic/h [[0 0]] [[0] [0]])) incanter.Matrix)))
 
-    (testing "cost-prime"
+    (testing "gradient"
       (testing "calculates the cost gradient"
-        (let [cost-prime (logistic/cost-prime xs ys [[0] [0] [0]])
+        (let [gradient (logistic/gradient xs ys [[0] [0] [0]])
               expected [[0.0085] [0.0188] [0.0001]]]
-          (is (matrices-equal? cost-prime expected)))))
-
-    (testing "next-thetas"
-      (testing "guesses new parameters theta based on the cost of the current thetas"
-        (let [next-thetas (logistic/next-thetas xs ys [[0] [0] [0]] alpha)
-              expected [[-0.0001] [-0.0002] [-0.0000]]]
-          (is (matrices-equal? next-thetas expected)))))
+          (is (matrices-equal? gradient expected)))))
 
     (testing "cost"
       (testing "calculates the cost of thetas that predict ys using xs"
@@ -59,8 +53,8 @@
               degree 6
               augmented-xs (map-features xs degree :ignore-first true) 
               thetas (matrix 0.5 (second (dim augmented-xs)) 1)
-              regularized-cost (logistic/cost augmented-xs ys thetas lambda)]
-          (is (close-to? regularized-cost 1.2318)))))
+              regularized-cost (logistic/cost augmented-xs ys thetas :lambda lambda)]
+          (is (close-to? regularized-cost 1.2318 3)))))
 
     (testing "probabilities"
       (testing "predicts the probability of a single point being in a category given thetas"
