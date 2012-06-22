@@ -6,10 +6,12 @@ ML is a machine-learning library/framework for Clojure. It's currently a pet pro
 To implement
 ------------
 
+### Classification algorithms
+
+- <del>k-nearest neighbors</del>
 - <del>Linear regression</del>
 - <del>Logistic regression</del>
-- <del>k-nearest neighbors</del>
+- Neural network for logistic regression feature discovery
 - Regularization for linear regression
 - <del>Regularization for logistic regression</del>
-- Feature discovery for logistic regression using a neural network
-
+- Regularization for neural network
