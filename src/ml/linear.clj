@@ -1,4 +1,4 @@
-(ns ml.regression.linear
+(ns ml.linear
   (:require [ml.optimization :as optimization])
   (:use [incanter core io stats]))
 

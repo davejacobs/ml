@@ -1,5 +1,5 @@
-(ns ml.classification.knn-spec
-  (:require [ml.classification.knn :as knn])
+(ns ml.knn-spec
+  (:require [ml.knn :as knn])
   (:use ml.helpers
         incanter.core
         clojure.test

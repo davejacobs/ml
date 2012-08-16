@@ -1,4 +1,4 @@
-(ns ml.regression.logistic
+(ns ml.logistic
   (:require [ml.optimization :as optimization])
   (:use [incanter core io stats]))
 

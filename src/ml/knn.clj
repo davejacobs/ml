@@ -1,4 +1,4 @@
-(ns ml.classification.knn
+(ns ml.knn
   (:use incanter.core
         incanter.io
         incanter.stats))

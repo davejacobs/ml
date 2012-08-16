@@ -1,5 +1,5 @@
-(ns ml.regression.linear-spec
-  (:require [ml.regression.linear :as linear])
+(ns ml.linear-spec
+  (:require [ml.linear :as linear])
   (:use ml.helpers
         incanter.core
         clojure.test
