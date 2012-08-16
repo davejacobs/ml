@@ -6,7 +6,7 @@
         [clojure.math.numeric-tower :only (round)]))
 
 (def data 
-  (let [raw-data (read-data "data/knn")]
+  (let [raw-data (read-data "data/knn.csv")]
     {:xs (to-matrix (sel raw-data :cols [0 1]))
      :ys (sel raw-data :cols 2)}))
 
