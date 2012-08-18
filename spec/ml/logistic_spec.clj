@@ -6,7 +6,7 @@
         [clojure.math.numeric-tower :only (round)]))
 
 (deftest logistic-regression
-  (let [raw-data (read-data "data/ex2.2.csv")
+  (let [raw-data (read-dataset-from-file "ex2.2.csv")
         m (first (dim raw-data))
         xs (with-bias-unit (sel raw-data :cols [0 1]))
         ys (sel raw-data :cols 2)

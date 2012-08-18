@@ -1,14 +1,13 @@
 (ns ml.helpers
+  (:require [clojure.java.io :as io])
   (:use incanter.core
         incanter.io
+        clojure-csv.core
         [clojure.math.numeric-tower :only (round)]))
 
 (def ^:dynamic *sig-figs* 4)
 
 (defn pwd [] (System/getProperty "user.dir"))
-
-(defn read-data [filename]
-  (read-dataset (str (pwd) "/src/ml/" filename)))
 
 (defn close-to?
   ([val1 val2]
@@ -53,3 +52,35 @@
      (if (options :ignore-first)
        (with-bias-unit fixed-orientation)
        fixed-orientation))))
+
+(defn random-matrix [[r c]]
+  (matrix (rand 1) r c))
+
+(defn multi-nth [values indices]
+  (let [indices-set (set indices)
+        filter-fn #(when (contains? indices-set %1) %2)]
+    (keep-indexed filter-fn values)))
+
+(defn full-filename [filename] (str (pwd) "/src/ml/data/" filename))
+
+(defn parse-csv-line [line]
+  (->> line parse-csv flatten (map read-string)))
+
+(defn read-dataset-from-file [filename]
+  (read-dataset (full-filename filename)))
+
+(def read-matrix-from-file (comp to-matrix read-dataset-from-file))
+
+(defn read-matrix-from-lines [filename indices]
+  (with-open [r (io/reader (full-filename filename))]
+    (->> indices
+      (multi-nth (line-seq r))
+      (map parse-csv-line)
+      doall
+      matrix)))
+
+(defn index-of [value values]
+  (first (keep-indexed #(if (= value %2) %1) values)))
+
+(defn index-of-max [values]
+  (index-of (apply max values) values))

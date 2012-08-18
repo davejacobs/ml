@@ -74,13 +74,33 @@
                          ; 1.0 x1  x2  x1^2 x1*x2 x2^2
                 expected [[1.0 1.0 2.0 1.0  2.0   4.0]
                           [1.0 3.0 4.0 9.0  12.0  16.0]]]
-            (is (h/matrices-equal? (h/map-features original 2 :ignore-first true) expected)))))))
-  (testing "when a degree of 3 is specified"
-    (testing "when :ignore-first is not passed as an option"
-      (testing "returns the matrix with the *first two* columns permuted to the degree specified (as a stop-gap measure)"
-        (let [original [[1.0 2.0]
-                        [3.0 4.0]]
-                       ; x1  x2  x1^2 x1*x2 x2^2 x1^3 x1^2*x2 x1*x2^2 x2^3
-              expected [[1.0 2.0 1.0  2.0   4.0  1.0  2.0     4.0     8.0]
-                        [3.0 4.0 9.0  12.0  16.0 27.0 36.0    48.0    64.0]]]
-          (is (h/matrices-equal? (h/map-features original 3) expected)))))))
+            (is (h/matrices-equal? (h/map-features original 2 :ignore-first true) expected))))))
+    (testing "when a degree of 3 is specified"
+      (testing "when :ignore-first is not passed as an option"
+        (testing "returns the matrix with the *first two* columns permuted to the degree specified (as a stop-gap measure)"
+          (let [original [[1.0 2.0]
+                          [3.0 4.0]]
+                         ; x1  x2  x1^2 x1*x2 x2^2 x1^3 x1^2*x2 x1*x2^2 x2^3
+                expected [[1.0 2.0 1.0  2.0   4.0  1.0  2.0     4.0     8.0]
+                          [3.0 4.0 9.0  12.0  16.0 27.0 36.0    48.0    64.0]]]
+            (is (h/matrices-equal? (h/map-features original 3) expected)))))))
+  
+  (testing "index-of"
+    (testing "returns the value's index when the value is in the collection"
+      (is (= (h/index-of 2 [1 2 3]) 1)))
+    (testing "returns nil when the value is not in the collection"
+      (is (= (h/index-of "not-present" [1 2 3]) nil))))
+  
+  (testing "index-of-max"
+    (testing "returns the index of the greatest value in the collection"
+      (is (= (h/index-of-max [-25 0 25]) 2)))
+    (testing "returns the first index of the greatest value if duplicated"
+      (is (= (h/index-of-max [-25 0 25 25]) 2))))
+  
+  (testing "multi-nth"
+    (testing "returns mutliple nth values in a collection (lazily)"
+      (is (= (h/multi-nth [1 2 3] [1 2]) [2 3]))))
+  
+  (testing "parse-csv-line"
+    (testing "returns a vector with values parsed by read-string"
+      (is (= (h/parse-csv-line "1,2,3") [1 2 3])))))
