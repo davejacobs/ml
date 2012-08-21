@@ -23,10 +23,10 @@
 (defn h [xs thetas]
   (mmult xs thetas))
 
-(defn mean-squared-cost [matrix1 matrix2]
-  (let [m (count matrix1)
+(defn mean-squared-cost [hypothesis actual]
+  (let [m (count hypothesis)
         multiplier (/ 1 (* 2 m))]
-    (* multiplier (sum (sq (minus matrix1 matrix2))))))
+    (* multiplier (sum (sq (minus hypothesis actual))))))
 
 (defn+opts cost [xs ys thetas | {cost-fn mean-squared-cost}]
   (let [hypothesis (h xs thetas)]

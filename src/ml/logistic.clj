@@ -9,12 +9,11 @@
 (defn h [xs thetas]
   (matrix-map g (mmult xs thetas)))
 
-(defn logarithmic-cost [xs ys thetas]
-  (let [m (count xs)
+(defn logarithmic-cost [hypothesis actual]
+  (let [m (count hypothesis)
         multiplier (/ 1 m)
-        hypothesis (h xs thetas)
-        if-0-fn (mmult (trans (minus ys)) (log hypothesis)) 
-        if-1-fn (mmult (trans (minus 1 ys)) (log (minus 1 hypothesis)))
+        if-0-fn (mmult (trans (minus actual)) (log hypothesis)) 
+        if-1-fn (mmult (trans (minus 1 actual)) (log (minus 1 hypothesis)))
         sum-differences (minus if-0-fn if-1-fn)]
     (mult multiplier sum-differences)))
 
@@ -23,8 +22,9 @@
         squared-sum (sum (sq (rest thetas)))]
     (* (/ lambda (* 2 m)) squared-sum)))
 
-(defn+opts cost [xs ys thetas | {cost-fn logarithmic-cost lambda 1}]
-  (cost-fn xs ys thetas))
+(defn+opts cost [xs ys thetas | {cost-fn logarithmic-cost}]
+  (let [hypothesis (h xs thetas)]
+    (cost-fn hypothesis ys)))
 
 (defn gradient [xs ys thetas & args]
   (apply optimization/gradient xs ys thetas :hypothesis-fn h args))
