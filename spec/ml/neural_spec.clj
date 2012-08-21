@@ -7,7 +7,9 @@
 (deftest neural-regression
   (let [lines [0 500 1000 1500 2000 2500 3000 3500 4000 4500]
         xs (read-matrix-from-lines "ex3-xs.csv" lines)
-        ys (read-matrix-from-lines "ex3-ys.csv" lines) 
+        y-labels (read-matrix-from-lines "ex3-ys.csv" lines) 
+        y-labels-as-indices (minus y-labels 1)
+        ys (sel (identity-matrix 10) :cols y-labels-as-indices)
         thetas-1 (read-matrix-from-file "ex3-thetas-1.csv")
         thetas-2 (read-matrix-from-file "ex3-thetas-2.csv")]
 
@@ -15,5 +17,5 @@
       (let [categories (map inc (range))
             theta-layers [thetas-1 thetas-2]
             actual (neural/predict-category xs theta-layers :categories categories)
-            expected ys]
+            expected y-labels]
         (is (matrices-equal? actual expected))))))
