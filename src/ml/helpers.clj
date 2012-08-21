@@ -61,7 +61,7 @@
         filter-fn #(when (contains? indices-set %1) %2)]
     (keep-indexed filter-fn values)))
 
-(defn full-filename [filename] (str (pwd) "/src/ml/data/" filename))
+(defn full-filename [filename] (str (pwd) "/spec/ml/data/" filename))
 
 (defn parse-csv-line [line]
   (->> line parse-csv flatten (map read-string)))

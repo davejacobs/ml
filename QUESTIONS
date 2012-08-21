@@ -1,0 +1,68 @@
+Machine learning
+----------------
+
+- Look more into vector norms, how they relate to the graph
+- Look into partial derivatives
+
+Testing
+-------
+
+What would my ideal ML test framework look like?
+
+- Has default dataset appropriate for testing specified type/class of algorithm
+- Dataset is easily modifiable
+- Fast for known datasets because statistics are memoized or mocked out
+- Test passes if specified performance metric passes specified threshold
+- Automatically splices data into learning data, test data, cross-validation data
+
+Options for gradient-descent
+----------------------------
+
+- Current, recursive: (gradient-descent x ys thetas alpha iterations)
+- Implicit original thetas, alpha, iterations: (gradient-descent x ys) 
+- Repeatedly (to pass to take): (gradient-descent x ys alpha)
+
+How should I permute features when creating new ones automatically
+; Eventually will do something more general
+; x1^1 * x2^0 * x3^0
+; x1^1 * x2^1
+
+;     feature position
+;
+; e   1 0 0
+; x   0 1 0
+; p   0 0 1
+; o
+; n   2 0
+; e   1 1
+; n   0 2
+; t
+;     3 0
+;     2 1
+;     1 2
+;     0 3
+
+; 2 0 0
+; 2 0 1
+; 2 0 2
+; 1 1 0
+; 1 1 1
+; 1 1 2
+; 0 2 0
+; 0 2 1
+; 0 2 2
+
+
+; The order is:
+; x1^1 * x2^0 
+; x1^0 * x2^1 
+; x1^2 * x2^0 
+; x1^1 * x2^1 
+; x1^0 * x2^2 
+; x1^3 * x2^0 
+; x1^2 * x2^1 
+; x1^1 * x2^2 
+; x1^0 * x2^3 
+; x1^4 * x2^0 
+; ...
+
