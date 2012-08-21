@@ -43,7 +43,9 @@
                            (matrix [[0.1 0.1] [0.2 0.2]]))))
     (testing "returns true for an equal two-dimensional vector and matrix"
       (is (h/matrices-equal? [[0.1 0.1] [0.2 0.2]]
-                           (matrix [[0.1 0.1] [0.2 0.2]])))))
+                           (matrix [[0.1 0.1] [0.2 0.2]]))))
+    (testing "returns false for non-equal vectors"
+      (is (not (h/matrices-equal? [1 2] [2 1])))))
 
   (testing "with-bias-unit"
     (testing "for a one-dimentional vector"
