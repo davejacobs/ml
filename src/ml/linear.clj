@@ -1,11 +1,10 @@
 (ns ml.linear
   (:require [ml.optimization :as optimization])
-  (:use [incanter core io stats]))
+  (:use clojure.options 
+        [incanter core io stats]))
 
 (defn normalize [value mean stdev]
-  (if (nil? value)
-    nil
-    (float (/ (- value mean) stdev))))
+  (when value (float (/ (- value mean) stdev))))
 
 (defn normalize-vector [column]
   (let [stdev (sd column)
@@ -29,11 +28,8 @@
         multiplier (/ 1 (* 2 m))]
     (* multiplier (sum (sq (minus matrix1 matrix2))))))
 
-(defn cost [xs ys thetas & args]
-  (let [defaults {:cost-fn mean-squared-cost}
-        options (merge defaults (apply hash-map args))
-        {:keys [cost-fn]} options
-        hypothesis (h xs thetas)]
+(defn+opts cost [xs ys thetas | {cost-fn mean-squared-cost}]
+  (let [hypothesis (h xs thetas)]
       (cost-fn hypothesis ys)))
 
 (def gradient optimization/gradient)

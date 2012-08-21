@@ -1,6 +1,7 @@
 (ns ml.logistic
   (:require [ml.optimization :as optimization])
-  (:use [incanter core io stats]))
+  (:use clojure.options
+        [incanter core io stats]))
 
 (defn g [z]
   (/ 1 (+ 1 (exp (- z)))))
@@ -22,12 +23,8 @@
         squared-sum (sum (sq (rest thetas)))]
     (* (/ lambda (* 2 m)) squared-sum)))
 
-(defn cost [xs ys thetas & args]
-  (let [defaults {:cost-fn logarithmic-cost
-                  :lambda 1}
-        options (merge defaults (apply hash-map args))
-        {:keys [cost-fn lambda]} options]
-    (cost-fn xs ys thetas)))
+(defn+opts cost [xs ys thetas | {cost-fn logarithmic-cost lambda 1}]
+  (cost-fn xs ys thetas))
 
 (defn gradient [xs ys thetas & args]
   (apply optimization/gradient xs ys thetas :hypothesis-fn h args))
