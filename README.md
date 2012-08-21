@@ -10,8 +10,8 @@ To implement
 - <del>Linear regression</del>
 - <del>Logistic regression</del>
 - Neural network for logistic regression feature discovery
-  - Predict values based on pre-generated weights
-  - Calculate cost of values
+  - <del>Predict values based on pre-generated weights</del>
+  - <del>Calculate cost of values</del>
   - Use backpropagation to adjust weights
 - Regularization for linear regression
 - <del>Regularization for logistic regression</del>

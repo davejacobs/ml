@@ -18,4 +18,9 @@
             theta-layers [thetas-1 thetas-2]
             actual (neural/predict-category xs theta-layers :categories categories)
             expected y-labels]
+        (is (matrices-equal? actual expected))))
+    
+    (testing "cost"
+      (let [actual (neural/cost xs ys [thetas-1 thetas-2])
+            expected [0.0558 0.1652 0.0423 0.1612 0.4744 0.0558 0.2726 0.1059 0.118 0.0345]]
         (is (matrices-equal? actual expected))))))

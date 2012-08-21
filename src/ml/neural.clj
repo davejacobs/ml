@@ -21,3 +21,15 @@
   (let [category-for-max-index (comp (partial nth categories) index-of-max)
         probabilities (h as theta-layers)]
     (map category-for-max-index probabilities)))
+
+(defn logarithmic-cost [xs ys theta-layers]
+  (let [m (count xs)
+        multiplier (/ 1 m)
+        hypothesis (matrix (h xs theta-layers))
+        if-0-fn (mult (minus ys) (log hypothesis))
+        if-1-fn (mult (minus 1 ys) (log (minus 1 hypothesis)))
+        sum-differences (minus if-0-fn if-1-fn)]
+    (map sum sum-differences)))
+
+(defn+opts cost [xs ys theta-layers | {cost-fn logarithmic-cost}]
+  (cost-fn xs ys theta-layers))
