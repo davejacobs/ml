@@ -8,15 +8,15 @@
         points (matrix (take m (repeat point)))]
     (->> points
       (minus xs)
-      (sq)
+      sq
       (map sum)
       (map sqrt)
       (bind-columns ys)
-      (to-vect)
+      to-vect
       (sort-by last)
       (take k)
       (map first)
       (partition-by identity)
       (map (juxt first count))
       (max-key last)
-      (ffirst))))
+      ffirst)))
