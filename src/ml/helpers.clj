@@ -34,6 +34,11 @@
     (bind-columns bias-unit (if (instance? incanter.core.Dataset xs)
                               (to-matrix xs) xs))))
 
+(defn without-bias-unit [xs]
+  (let [m (matrix xs)
+        cols (count (first xs))]
+    (sel m :cols (range 1 cols))))
+
 ; I haven't come up with a good algorithm for mapping features yet
 ; so I'm manually mapping the first two columns into derivative features
 ; for now.
