@@ -58,6 +58,13 @@
        (with-bias-unit fixed-orientation)
        fixed-orientation))))
 
+(defn map-hash [f coll]
+  (let [transform (fn [[k v]] [k (f v)])]
+    (apply hash-map (map transform coll))))
+
+(def map-dims
+  (partial map-hash dim))
+
 (defn random-matrix [[r c]]
   (matrix (rand 1) r c))
 
