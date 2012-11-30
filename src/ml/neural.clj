@@ -1,11 +1,18 @@
 (ns ml.neural
   (:require [ml.logistic :as logistic])
-  (:use ml.helpers
+  (:use alex-and-georges.debug-repl 
+        ml.helpers
         clojure.options
         [incanter core io stats]))
 
-(defn g [z]
-  (/ 1 (+ 1 (exp (- z)))))
+; (def lines (range 0 4501 500))
+; (def xs (read-matrix-from-lines "neural-xs.csv" lines))
+; (def ys (let [y-labels (read-matrix-from-lines "neural-ys.csv" lines)
+              ; y-labels-as-indices (minus y-labels 1)]
+          ; (sel (identity-matrix 10) :cols y-labels-as-indices)))
+
+; (def theta-layers [(read-matrix-from-file "neural-thetas-1.csv")
+                   ; (read-matrix-from-file "neural-thetas-2.csv")])
 
 (defn apply-weights [as thetas]
   (mmult as (trans thetas)))
@@ -13,11 +20,14 @@
 (defn activate [as thetas]
   (let [biased-as (with-bias-unit as)
         weighted (apply-weights biased-as thetas)]
-    (matrix-map g weighted)))
+    (matrix-map logistic/g weighted)))
 
 (defn h [as theta-layers]
   (matrix (reduce activate as theta-layers)))
 
+;; TODO: Clean up categories and make as general as possible
+;; (make as few assumptions about incoming data as possible,
+;; but create helpers to deal with that data before it reaches this code)
 (defn+opts predict-category [as theta-layers | {categories (range)}]
   (let [category-for-max-index (comp (partial nth categories) index-of-max)
         probabilities (h as theta-layers)]
@@ -39,71 +49,40 @@
   (let [sigmoid (matrix (matrix-map logistic/g layer))]
     (mult sigmoid (minus 1 sigmoid))))
 
-;; Returns new theta-layers based on cost of hypothesis
-;; Naive, ungeneralized implementation (for two layers)
-(defn+opts update-thetas [xs ys [thetas-1 thetas-2]]
-  ; (let [initial-deltas-1 (apply matrix (dim thetas-1))
-        ; initial-deltas-2 (apply matrix (dim thetas-2))]
-    ; (reduce #() [initial-deltas-1 initial-deltas-2]))
-  (let [m (first (dim xs))
-        multiplier (/ 1 m)
-        a1 (with-bias-unit xs)
-        z2 (mmult a1 (trans thetas-1))
-        a2 (with-bias-unit (matrix-map logistic/g z2))
-        z3 (mmult a2 (trans thetas-2))
-        hypothesis (matrix (matrix-map logistic/g z3))
-        d3 (minus hypothesis ys)
-        biased-d2 (mult (mmult d3 thetas-2)
-                        (with-bias-unit (g-prime z2)))
-        d2 (without-bias-unit biased-d2)
-        delta-2 (mmult (trans d3) a2)
-        delta-1 (mmult (trans d2) a1)
-        theta-1-grad (mult multiplier delta-1)
-        theta-2-grad (mult multiplier delta-2)]
-    {:cost (cost xs ys [thetas-1 thetas-2])
-     :gradients [theta-1-grad theta-2-grad]}))
-
 (defn conj-neuron [neurons weights]
   (let [inputs (-> neurons last :outputs with-bias-unit)
         values (mmult inputs (trans weights))
-        outputs (matrix-map logistic/g values)]
+        outputs (matrix (matrix-map logistic/g values))]
     (conj neurons {:inputs inputs
                    :weights weights
                    :values values
                    :outputs outputs})))
 
-(defn theta-errors [xs ys theta-layers]
-  (let [m (nrow xs)
-        multiplier (/ 1 m)
+;; Arguments: 
+;; - Errors from next layer 
+;; - Weights from this layer 
+;; - Values from this layer 
+(defn calculate-error [errors weights values]
+  (when values 
+    (mult (mmult errors weights) 
+          (with-bias-unit (g-prime values))))) 
 
-        ;; Implementation note: We need to keep a record of the
-        ;; feed-forward process to make backpropagation efficient
-        ;; -- so instead of simply reducing over the activation of
-        ;; each neuron, as in cost analysis, we conj onto a list of
-        ;; "neurons", which we can look back to for previous activity
-        ;; levels.
+(defn backprop-deltas [neurons prev-errors pos]
+  (let [neuron (nth neurons pos)
+        deltas (mmult (trans prev-errors) (-> neuron :outputs with-bias-unit))
+        next-neurons (assoc-in neurons [pos :deltas] deltas)]
+    (if (= pos 1)
+      (map :deltas next-neurons)
+      (let [weights (get-in neurons [pos :weights]) 
+            values (get-in neurons [(dec pos) :values]) 
+            next-errors (calculate-error prev-errors weights values)]
+        (recur next-neurons (without-bias-unit next-errors) (dec pos)))))) 
+
+(defn theta-gradients [xs ys theta-layers]
+  (println "[cost]" (cost xs ys theta-layers))
+  (let [multiplier (/ 1 (nrow xs))
         neurons (reduce conj-neuron [{:outputs xs}] theta-layers)
         hypothesis (-> neurons last :outputs matrix)
-
-        neuron-1 (first neurons)
-        neuron-2 (second neurons)
-
-        thetas-1 (first theta-layers)
-        thetas-2 (second theta-layers)
-
-        d3 (minus hypothesis ys)
-        biased-d2 (mult (mmult d3 thetas-2)
-                        (with-bias-unit (g-prime (neuron-2 :values))))
-        d2 (without-bias-unit biased-d2)
-
-        delta-2 (mmult (trans d3) (with-bias-unit (neuron-2 :outputs)))
-        delta-1 (mmult (trans d2) (with-bias-unit (neuron-1 :outputs)))
-        theta-1-grad (mult multiplier delta-1)
-        theta-2-grad (mult multiplier delta-2)]
-    {:cost (cost xs ys [thetas-1 thetas-2])
-     :gradients [theta-1-grad theta-2-grad]}))
-
-(defn grad-check [xs ys theta-layers]
-  (let [fns [update-thetas theta-errors]
-        fn-results ((apply juxt fns) xs ys theta-layers)]
-    (= (first fn-results) (second fn-results)))) 
+        last-errors (minus hypothesis ys)
+        deltas (backprop-deltas neurons last-errors (dec (count neurons)))]
+    (map (partial mult multiplier) deltas)))

@@ -2,6 +2,7 @@
   (:require [clojure.java.io :as io])
   (:use incanter.core
         incanter.io
+        incanter.stats
         clojure-csv.core
         [clojure.math.numeric-tower :only (round)]))
 
@@ -35,9 +36,7 @@
                               (to-matrix xs) xs))))
 
 (defn without-bias-unit [xs]
-  (let [m (matrix xs)
-        cols (count (first xs))]
-    (sel m :cols (range 1 cols))))
+  (sel (matrix xs) :cols (range 1 (ncol xs))))
 
 ; I haven't come up with a good algorithm for mapping features yet
 ; so I'm manually mapping the first two columns into derivative features
@@ -62,8 +61,12 @@
   (let [transform (fn [[k v]] [k (f v)])]
     (apply hash-map (map transform coll))))
 
+(defn map-hash-2 [f coll]
+  (let [transform (fn [[k v]] [k (f v)])]
+    (map transform coll)))
+
 (def map-dims
-  (partial map-hash dim))
+  (partial map-hash-2 dim))
 
 (defn random-matrix [[r c]]
   (matrix (rand 1) r c))
@@ -96,3 +99,16 @@
 
 (defn index-of-max [values]
   (index-of (apply max values) values))
+
+(defn msample 
+  ([m] (msample m 3))
+  ([m size]
+   (when m 
+     (sel (matrix m)
+          :cols (range size) 
+          :rows (range size)))))
+
+(defn unroll [m]
+  (flatten m))
+
+(defn roll [flattened-m & dims] [])
